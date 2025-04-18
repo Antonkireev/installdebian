@@ -262,7 +262,7 @@ summary_and_confirm() {
 
 ### Entrypoints ###
 configuring() {
-#    configure_partitioning
+    configure_partitioning
     configure_debian_install
 #    configure_network
 #    configure_bootloader
