@@ -210,14 +210,23 @@ configure_debian_install() {
 run_debian_install() {
   echo "[Running] Debian installation..."
   echo "Mounting target directory: $INSTALL_TARGET"
-  mkdir -p "$INSTALL_TARGET"
-
+  mkdir -p "$INSTALL_TARGET/root"
+  mkdir -p "$INSTALL_TARGET/boot"
+  if [[ "$PART_USE_RAID" == "yes" ]]; then
+    mount "/dev/md0p1" "$INSTALL_TARGET/boot"
+    mount "/dev/md0p3" "$INSTALL_TARGET/root"
+  else
+    mount "/dev/${PART_DRIVE1}p1" "$INSTALL_TARGET/boot"
+    mount "/dev/${PART_DRIVE1}p3" "$INSTALL_TARGET/root"
+  fi
+ echo "mount target directory: done"
+  sleep 2
   # Запуск debootstrap
   echo "Starting debootstrap for $DEBIAN_RELEASE..."
-  if debootstrap --arch=amd64 "$DEBIAN_RELEASE" "$INSTALL_TARGET" "$DEBIAN_MIRROR"; then
-    echo "Debian base system installed successfully in $INSTALL_TARGET."
+  if debootstrap --arch=amd64 "$DEBIAN_RELEASE" "${INSTALL_TARGET}/root" "$DEBIAN_MIRROR"; then
+    echo "Debian installed in $INSTALL_TARGET."
   else
-    echo "Error: debootstrap failed. Please check your configuration and try again."
+    echo "Error: debootstrap failed"
     exit 1
   fi
 
