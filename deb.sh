@@ -28,56 +28,56 @@ fi
 
 ### CONFIGURE FUNCTIONS ###
 
-# configure_partitioning() {
-#   echo "Detected disks:"
-#   lsblk -o NAME,SIZE -dn | while read -r disk size; do
-#     if [[ $(lsblk -o TYPE -dn "/dev/$disk") == "disk" ]]; then
-#       echo "- /dev/$disk ($size)"
-#     fi
-#   done
+configure_partitioning() {
+  echo "Detected disks:"
+  lsblk -o NAME,SIZE -dn | while read -r disk size; do
+    if [[ $(lsblk -o TYPE -dn "/dev/$disk") == "disk" ]]; then
+      echo "- /dev/$disk ($size)"
+    fi
+  done
 
-#   echo "[Configuring] Partitioning parameters"
+  echo "[Configuring] Partitioning parameters"
 
-#   if [[ -z "$PART_DRIVE1" ]]; then
-#     read -rp 'Primary disk (e.g., nvme0n1): ' PART_DRIVE1
-#     PART_DRIVE1="${PART_DRIVE1:-nvme0n1}"
-#   fi
+  if [[ -z "$PART_DRIVE1" ]]; then
+    read -rp 'Primary disk (e.g., nvme0n1): ' PART_DRIVE1
+    PART_DRIVE1="${PART_DRIVE1:-nvme0n1}"
+  fi
 
-#   if [[ -z "$PART_DRIVE2" ]]; then
-#     read -rp 'Secondary disk for RAID (optional): ' PART_DRIVE2
-#     PART_DRIVE2="${PART_DRIVE2:-nvme1n1}"
-#   fi
+  if [[ -z "$PART_DRIVE2" ]]; then
+    read -rp 'Secondary disk for RAID (optional): ' PART_DRIVE2
+    PART_DRIVE2="${PART_DRIVE2:-nvme1n1}"
+  fi
 
-#   if [[ -z "$PART_USE_RAID" ]]; then
-#     read -rp 'Use RAID? (yes/no): ' PART_USE_RAID
-#     PART_USE_RAID="${PART_USE_RAID:-yes}"
-#   fi
+  if [[ -z "$PART_USE_RAID" ]]; then
+    read -rp 'Use RAID? (yes/no): ' PART_USE_RAID
+    PART_USE_RAID="${PART_USE_RAID:-yes}"
+  fi
 
-#   if [[ -z "$PART_RAID_LEVEL" ]] && [[ "$PART_USE_RAID" == "yes" ]]; then
-#     read -rp 'RAID Level (e.g., 1): ' PART_RAID_LEVEL
-#     PART_RAID_LEVEL="${PART_RAID_LEVEL:-1}"
-#   fi
+  if [[ -z "$PART_RAID_LEVEL" ]] && [[ "$PART_USE_RAID" == "yes" ]]; then
+    read -rp 'RAID Level (e.g., 1): ' PART_RAID_LEVEL
+    PART_RAID_LEVEL="${PART_RAID_LEVEL:-1}"
+  fi
 
-#   if [[ -z "$PART_BOOT_SIZE" ]]; then
-#     read -rp 'Boot partition size (e.g., 512M): ' PART_BOOT_SIZE
-#     PART_BOOT_SIZE="${PART_BOOT_SIZE:-512M}"
-#   fi
+  if [[ -z "$PART_BOOT_SIZE" ]]; then
+    read -rp 'Boot partition size (e.g., 512M): ' PART_BOOT_SIZE
+    PART_BOOT_SIZE="${PART_BOOT_SIZE:-512M}"
+  fi
 
-#   if [[ -z "$PART_SWAP_SIZE" ]]; then
-#     read -rp 'Swap size (e.g., 32G): ' PART_SWAP_SIZE
-#     PART_SWAP_SIZE="${PART_SWAP_SIZE:-32G}"
-#   fi
+  if [[ -z "$PART_SWAP_SIZE" ]]; then
+    read -rp 'Swap size (e.g., 32G): ' PART_SWAP_SIZE
+    PART_SWAP_SIZE="${PART_SWAP_SIZE:-32G}"
+  fi
 
-#   if [[ -z "$PART_ROOT_FS" ]]; then
-#     read -rp 'Root filesystem type (e.g., ext4): ' PART_ROOT_FS
-#     PART_ROOT_FS="${PART_ROOT_FS:-ext4}"
-#   fi
+  if [[ -z "$PART_ROOT_FS" ]]; then
+    read -rp 'Root filesystem type (e.g., ext4): ' PART_ROOT_FS
+    PART_ROOT_FS="${PART_ROOT_FS:-ext4}"
+  fi
 
-#   if [[ -z "$PART_BOOT_FS" ]]; then
-#     read -rp 'Boot filesystem type (e.g., ext3): ' PART_BOOT_FS
-#     PART_BOOT_FS="${PART_BOOT_FS:-ext3}"
-#   fi
-# }
+  if [[ -z "$PART_BOOT_FS" ]]; then
+    read -rp 'Boot filesystem type (e.g., ext3): ' PART_BOOT_FS
+    PART_BOOT_FS="${PART_BOOT_FS:-ext3}"
+  fi
+}
 
 configure_debian_install() {
    echo "[Configuring] Debian install parameters"
