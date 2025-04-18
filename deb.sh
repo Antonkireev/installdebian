@@ -28,56 +28,56 @@ fi
 
 ### CONFIGURE FUNCTIONS ###
 
-configure_partitioning() {
-  echo "Detected disks:"
-  lsblk -o NAME,SIZE -dn | while read -r disk size; do
-    if [[ $(lsblk -o TYPE -dn "/dev/$disk") == "disk" ]]; then
-      echo "- /dev/$disk ($size)"
-    fi
-  done
+# configure_partitioning() {
+#   echo "Detected disks:"
+#   lsblk -o NAME,SIZE -dn | while read -r disk size; do
+#     if [[ $(lsblk -o TYPE -dn "/dev/$disk") == "disk" ]]; then
+#       echo "- /dev/$disk ($size)"
+#     fi
+#   done
 
-  echo "[Configuring] Partitioning parameters"
+#   echo "[Configuring] Partitioning parameters"
 
-  if [[ -z "$PART_DRIVE1" ]]; then
-    read -rp 'Primary disk (e.g., nvme0n1): ' PART_DRIVE1
-    PART_DRIVE1="${PART_DRIVE1:-nvme0n1}"
-  fi
+#   if [[ -z "$PART_DRIVE1" ]]; then
+#     read -rp 'Primary disk (e.g., nvme0n1): ' PART_DRIVE1
+#     PART_DRIVE1="${PART_DRIVE1:-nvme0n1}"
+#   fi
 
-  if [[ -z "$PART_DRIVE2" ]]; then
-    read -rp 'Secondary disk for RAID (optional): ' PART_DRIVE2
-    PART_DRIVE2="${PART_DRIVE2:-nvme1n1}"
-  fi
+#   if [[ -z "$PART_DRIVE2" ]]; then
+#     read -rp 'Secondary disk for RAID (optional): ' PART_DRIVE2
+#     PART_DRIVE2="${PART_DRIVE2:-nvme1n1}"
+#   fi
 
-  if [[ -z "$PART_USE_RAID" ]]; then
-    read -rp 'Use RAID? (yes/no): ' PART_USE_RAID
-    PART_USE_RAID="${PART_USE_RAID:-yes}"
-  fi
+#   if [[ -z "$PART_USE_RAID" ]]; then
+#     read -rp 'Use RAID? (yes/no): ' PART_USE_RAID
+#     PART_USE_RAID="${PART_USE_RAID:-yes}"
+#   fi
 
-  if [[ -z "$PART_RAID_LEVEL" ]] && [[ "$PART_USE_RAID" == "yes" ]]; then
-    read -rp 'RAID Level (e.g., 1): ' PART_RAID_LEVEL
-    PART_RAID_LEVEL="${PART_RAID_LEVEL:-1}"
-  fi
+#   if [[ -z "$PART_RAID_LEVEL" ]] && [[ "$PART_USE_RAID" == "yes" ]]; then
+#     read -rp 'RAID Level (e.g., 1): ' PART_RAID_LEVEL
+#     PART_RAID_LEVEL="${PART_RAID_LEVEL:-1}"
+#   fi
 
-  if [[ -z "$PART_BOOT_SIZE" ]]; then
-    read -rp 'Boot partition size (e.g., 512M): ' PART_BOOT_SIZE
-    PART_BOOT_SIZE="${PART_BOOT_SIZE:-512M}"
-  fi
+#   if [[ -z "$PART_BOOT_SIZE" ]]; then
+#     read -rp 'Boot partition size (e.g., 512M): ' PART_BOOT_SIZE
+#     PART_BOOT_SIZE="${PART_BOOT_SIZE:-512M}"
+#   fi
 
-  if [[ -z "$PART_SWAP_SIZE" ]]; then
-    read -rp 'Swap size (e.g., 32G): ' PART_SWAP_SIZE
-    PART_SWAP_SIZE="${PART_SWAP_SIZE:-32G}"
-  fi
+#   if [[ -z "$PART_SWAP_SIZE" ]]; then
+#     read -rp 'Swap size (e.g., 32G): ' PART_SWAP_SIZE
+#     PART_SWAP_SIZE="${PART_SWAP_SIZE:-32G}"
+#   fi
 
-  if [[ -z "$PART_ROOT_FS" ]]; then
-    read -rp 'Root filesystem type (e.g., ext4): ' PART_ROOT_FS
-    PART_ROOT_FS="${PART_ROOT_FS:-ext4}"
-  fi
+#   if [[ -z "$PART_ROOT_FS" ]]; then
+#     read -rp 'Root filesystem type (e.g., ext4): ' PART_ROOT_FS
+#     PART_ROOT_FS="${PART_ROOT_FS:-ext4}"
+#   fi
 
-  if [[ -z "$PART_BOOT_FS" ]]; then
-    read -rp 'Boot filesystem type (e.g., ext3): ' PART_BOOT_FS
-    PART_BOOT_FS="${PART_BOOT_FS:-ext3}"
-  fi
-}
+#   if [[ -z "$PART_BOOT_FS" ]]; then
+#     read -rp 'Boot filesystem type (e.g., ext3): ' PART_BOOT_FS
+#     PART_BOOT_FS="${PART_BOOT_FS:-ext3}"
+#   fi
+# }
 
 configure_debian_install() {
    echo "[Configuring] Debian install parameters"
@@ -127,84 +127,84 @@ configure_debian_install() {
 #}
 
 ### RUN FUNCTIONS (Empty placeholders) ###
-run_partitioning() {
-  echo "[Running] Partitioning..."
+# run_partitioning() {
+#   echo "[Running] Partitioning..."
 
-  if [[ "$PART_USE_RAID" == "yes" ]]; then
-    parted -s "/dev/$PART_DRIVE1" mklabel msdos
-    parted -s "/dev/$PART_DRIVE2" mklabel msdos
-    echo "Label disk ${PART_DRIVE1}: done"
-    sleep 2
+#   if [[ "$PART_USE_RAID" == "yes" ]]; then
+#     parted -s "/dev/$PART_DRIVE1" mklabel msdos
+#     parted -s "/dev/$PART_DRIVE2" mklabel msdos
+#     echo "Label disk ${PART_DRIVE1}: done"
+#     sleep 2
 
-    echo yes | mdadm --create --verbose /dev/md0 --level="$PART_RAID_LEVEL" --raid-devices=2 "/dev/$PART_DRIVE1" "/dev/$PART_DRIVE2"
-    echo "RAID: done"
-    sleep 2
+#     echo yes | mdadm --create --verbose /dev/md0 --level="$PART_RAID_LEVEL" --raid-devices=2 "/dev/$PART_DRIVE1" "/dev/$PART_DRIVE2"
+#     echo "RAID: done"
+#     sleep 2
 
-    parted -s /dev/md0 mklabel msdos
-    echo "Label disk md0: done"
-    sleep 2
+#     parted -s /dev/md0 mklabel msdos
+#     echo "Label disk md0: done"
+#     sleep 2
 
-    parted -s /dev/md0 mkpart primary ext3 1MiB "$PART_BOOT_SIZE"
-    echo "Partition boot: done"
-    sleep 2
+#     parted -s /dev/md0 mkpart primary ext3 1MiB "$PART_BOOT_SIZE"
+#     echo "Partition boot: done"
+#     sleep 2
 
-    parted -s /dev/md0 mkpart primary linux-swap "$PART_BOOT_SIZE" "$PART_SWAP_SIZE"
-    echo "Partition swap: done"
-    sleep 2
+#     parted -s /dev/md0 mkpart primary linux-swap "$PART_BOOT_SIZE" "$PART_SWAP_SIZE"
+#     echo "Partition swap: done"
+#     sleep 2
 
-    parted -s /dev/md0 mkpart primary "$PART_ROOT_FS" "$PART_SWAP_SIZE" 100%
-    echo "Partition root: done"
-    sleep 2
+#     parted -s /dev/md0 mkpart primary "$PART_ROOT_FS" "$PART_SWAP_SIZE" 100%
+#     echo "Partition root: done"
+#     sleep 2
 
-    mkfs.ext3 "/dev/md0p1"
-    echo "Format boot partition: done"
-    sleep 2
+#     mkfs.ext3 "/dev/md0p1"
+#     echo "Format boot partition: done"
+#     sleep 2
 
-    mkswap "/dev/md0p2"
-    echo "mkswap: done"
-    sleep 2
+#     mkswap "/dev/md0p2"
+#     echo "mkswap: done"
+#     sleep 2
 
-    swapon "/dev/md0p2"
-    echo "swapon: done"
-    sleep 2
+#     swapon "/dev/md0p2"
+#     echo "swapon: done"
+#     sleep 2
 
-    mkfs.ext4 "/dev/md0p3"
-    echo "Format root partition: done"
-    sleep 2
+#     mkfs.ext4 "/dev/md0p3"
+#     echo "Format root partition: done"
+#     sleep 2
 
-  else
-    parted -s "/dev/$PART_DRIVE1" mklabel msdos
-    echo "Label disk ${PART_DRIVE1}: done"
-    sleep 2
+#   else
+#     parted -s "/dev/$PART_DRIVE1" mklabel msdos
+#     echo "Label disk ${PART_DRIVE1}: done"
+#     sleep 2
 
-    parted -s "/dev/$PART_DRIVE1" mkpart primary ext3 1MiB "$PART_BOOT_SIZE"
-    echo "Partition boot: done"
-    sleep 2
+#     parted -s "/dev/$PART_DRIVE1" mkpart primary ext3 1MiB "$PART_BOOT_SIZE"
+#     echo "Partition boot: done"
+#     sleep 2
 
-    parted -s "/dev/$PART_DRIVE1" mkpart primary linux-swap "$PART_BOOT_SIZE" "$PART_SWAP_SIZE"
-    echo "Partition swap: done"
-    sleep 2
+#     parted -s "/dev/$PART_DRIVE1" mkpart primary linux-swap "$PART_BOOT_SIZE" "$PART_SWAP_SIZE"
+#     echo "Partition swap: done"
+#     sleep 2
 
-    parted -s "/dev/$PART_DRIVE1" mkpart primary "$PART_ROOT_FS" "$PART_SWAP_SIZE" 100%
-    echo "Partition root: done"
+#     parted -s "/dev/$PART_DRIVE1" mkpart primary "$PART_ROOT_FS" "$PART_SWAP_SIZE" 100%
+#     echo "Partition root: done"
 
-    mkfs.ext3 "/dev/${PART_DRIVE1}p1"
-    echo "Format boot partition: done"
-    sleep 2
+#     mkfs.ext3 "/dev/${PART_DRIVE1}p1"
+#     echo "Format boot partition: done"
+#     sleep 2
 
-    mkswap "/dev/${PART_DRIVE1}p2"
-    echo "mkswap: done"
-    sleep 2
+#     mkswap "/dev/${PART_DRIVE1}p2"
+#     echo "mkswap: done"
+#     sleep 2
 
-    swapon "/dev/${PART_DRIVE1}p2"
-    echo "swapon: done"
-    sleep 2
+#     swapon "/dev/${PART_DRIVE1}p2"
+#     echo "swapon: done"
+#     sleep 2
 
-    mkfs.ext4 "/dev/${PART_DRIVE1}p3"
-    echo "Format root partition: done"
-    sleep 2
-  fi
-}
+#     mkfs.ext4 "/dev/${PART_DRIVE1}p3"
+#     echo "Format root partition: done"
+#     sleep 2
+#   fi
+# }
 
 
 run_debian_install() {
@@ -253,8 +253,8 @@ summary_and_confirm() {
 
 ### Entrypoints ###
 configuring() {
-    configure_partitioning
-#    configure_debian_install
+#    configure_partitioning
+    configure_debian_install
 #    configure_network
 #    configure_bootloader
 #    configure_initial_config
@@ -262,8 +262,8 @@ configuring() {
 }
 
 running() {
-    run_partitioning
-#    run_debian_install
+#    run_partitioning
+    run_debian_install
 #    run_network
 #    run_bootloader
 #    run_initial_config
